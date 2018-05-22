@@ -4,7 +4,7 @@ const {
     GraphQLInt,
     GraphQLSchema,
     GraphQLList,
-    GraphNonNull
+    GraphQLNonNull
 } = require('graphql');
 
 //hardcoded data
@@ -17,34 +17,44 @@ const customers = [
 
 // customer type
 const CustomerType = new GraphQLObjectType({
-    name: 'Customer',
-    filds:()=>({
+    name:'Customer',
+    fields:() => ({
         id: {type:GraphQLString},
-        name: {type:GraphQLString},
-        email: {type:GraphQLString},
-        age: {GraphQLInt}
+        name: {type: GraphQLString},
+        email: {type: GraphQLString},
+        age: {type: GraphQLInt},
     })
-})
+});
 
-//rout query
-const RootQuery = new GraphQLObjectType({
-    name: 'RootQueryType',
-    filds:{
+
+// Root Query
+const RootQuery= new GraphQLObjectType({
+    name:'RootQueryType',
+    fields:{
         customer:{
-            type: CustomerType,
+            type:CustomerType,
             args:{
-                id:{type: GraphQLString}
+                id:{type:GraphQLString}
             },
-            resolve(parentValue,args){
-                for (let i=0; i< customers.length; i++) {
-                    if(customers[i] == args.id )
-                        return customers[i];         
+            resolve(parentValue, args){
+
+                for(let i = 0;i < customers.length;i++){
+                    if(customers[i].id == args.id){
+                        return customers[i];
+                    }
                 }
+            }
+        },
+        customers:{
+            type: new GraphQLList(CustomerType),
+            resolve(parentValue,args){
+                return customers;
             }
         }
     }
 });
 
-module.exprorts = new GraphQLSchema({
+
+module.exports = new GraphQLSchema({
     query: RootQuery
 });
